@@ -62,13 +62,15 @@ const JoinPage = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const res = await customAuthAxios.post('/auth/signup', inputs);
-    console.log('res:', res);
-    if (res.status === 201) {
+    try {
+      const res = await customAuthAxios.post('/auth/signup', inputs);
+      console.log('res:', res);
       alert('회원 가입 성공!! 로그인 페이지로 이동합니다.');
       navigate('/');
-    } else {
+    } catch (err) {
+      console.log('err:', err.response);
       alert('회원가입을 다시 진행해주세요.');
+      setErrorMessage(err.response.data.message);
     }
   };
 
