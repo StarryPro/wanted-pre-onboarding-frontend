@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { customAuthAxios } from '../../api/customAuthAxios';
+import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [inputs, setInputs] = useState({
     email: '',
     password: '',
@@ -15,9 +19,25 @@ const LoginPage = () => {
     });
   };
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await customAuthAxios.post('/auth/signin', inputs);
+      console.log('res:', res);
+      const accessToken = res.data.access_token;
+      if (accessToken) {
+        localStorage.setItem('token', accessToken);
+      }
+      navigate('/todo');
+    } catch (err) {
+      console.log('err:', err.response);
+      alert('잘못된 로그인 정보입니다.');
+    }
+  };
+
   return (
     <section>
-      <form>
+      <form onSubmit={onSubmit}>
         <label htmlFor="email">
           <input
             id="email"
@@ -41,6 +61,9 @@ const LoginPage = () => {
         </label>
         <input type="submit" value="로그인" />
       </form>
+      <div>
+        계정이 없으신가요? <Link to="/join">회원가입</Link>
+      </div>
     </section>
   );
 };

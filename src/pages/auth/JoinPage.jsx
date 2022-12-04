@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { customAuthAxios } from '../../api/customAuthAxios';
+import { Link } from 'react-router-dom';
 
 const JoinPage = () => {
+  const navigate = useNavigate();
   const [invaliedEmail, setInvaliedEmail] = useState(false);
   const [invaliedPassword, setInvaliedPassword] = useState(false);
   const [invaliedTotal, setInvaliedTotal] = useState(true);
@@ -56,9 +60,21 @@ const JoinPage = () => {
     }
   }, [invaliedEmail, invaliedPassword]);
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const res = await customAuthAxios.post('/auth/signup', inputs);
+    console.log('res:', res);
+    if (res.status === 201) {
+      alert('회원 가입 성공!! 로그인 페이지로 이동합니다.');
+      navigate('/');
+    } else {
+      alert('회원가입을 다시 진행해주세요.');
+    }
+  };
+
   return (
     <section>
-      <form>
+      <form onSubmit={onSubmit}>
         <label htmlFor="email">
           <input
             id="email"
@@ -85,6 +101,9 @@ const JoinPage = () => {
         </label>
         <p>{errorMessage}</p>
         <input type="submit" value="회원가입" disabled={invaliedTotal} />
+        <div>
+          이미 계정이 있으신가요? <Link to="/">로그인</Link>
+        </div>
       </form>
     </section>
   );
