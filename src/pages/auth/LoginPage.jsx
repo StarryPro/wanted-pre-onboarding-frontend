@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { customAuthAxios } from '../../api/customAuthAxios';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const LoginPage = () => {
     try {
       const res = await customAuthAxios.post('/auth/signin', inputs);
       console.log('res:', res);
+      localStorage.clear();
       const accessToken = res.data.access_token;
       if (accessToken) {
         localStorage.setItem('token', accessToken);
@@ -34,6 +36,12 @@ const LoginPage = () => {
       alert('잘못된 로그인 정보입니다.');
     }
   };
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      navigate('/todo');
+    }
+  }, []);
 
   return (
     <section>
