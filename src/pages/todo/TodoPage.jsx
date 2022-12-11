@@ -1,19 +1,42 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import TodoList from '../../components/Todo/TodoList/TodoList';
+import TodoPost from '../../components/Todo/TodoPost/TodoPost';
+import { createTodoApi, getTodoApi } from '../../utils/todo';
 
 const TodoPage = () => {
-  const navigate = useNavigate();
+  const [todoList, setTodoList] = useState([]);
+  const handleSubmit = async (newTodoText) => {
+    const body = {
+      todo: newTodoText,
+    };
+    try {
+      const res = await createTodoApi(body);
+      console.log(res);
+      getTodo();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getTodo = async () => {
+    try {
+      const res = await getTodoApi();
+      const data = res.data;
+      setTodoList(data);
+      console.log('todoList:', todoList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      navigate('/');
-    }
+    getTodo();
   }, []);
 
   return (
     <>
-      <div>todo 페이지 입니다.</div>
-      <button onClick={() => localStorage.clear()}>토큰 삭제</button>
+      <TodoPost onAdd={handleSubmit} getTodo={getTodo} />
+      <TodoList todoList={todoList} getTodo={getTodo} />
     </>
   );
 };
